@@ -1,5 +1,3 @@
-# Eclipse output folder #
-bin/
-
-# Mac OSX files #
-.DS_Store
+/bin
+/bin
+/bin
