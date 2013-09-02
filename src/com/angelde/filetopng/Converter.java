@@ -150,10 +150,10 @@ public class Converter {
 		int y = 0;
 		int rgba = 0;
 		for (int i = 0; i < width*height*4; i += 4) {
-			rgba = (((int)get(data, i+0) & 0xFF) << 24) | //alpha
-					(((int)get(data, i+1) & 0xFF) << 16) | //red
-					(((int)get(data, i+2) & 0xFF) << 8)  | //green
-					(((int)get(data, i+3) & 0xFF) << 0); //blue
+			rgba = (((int)get(data, i+3) & 0xFF) << 24) | //alpha
+					(((int)get(data, i+0) & 0xFF) << 16) | //red
+					(((int)get(data, i+1) & 0xFF) << 8)  | //green
+					(((int)get(data, i+2) & 0xFF) << 0); //blue
 			bi.setPixel(x, y, rgba);
 			y++;
 			if (y >= height) {
@@ -190,10 +190,10 @@ public class Converter {
 				byte green = (byte) (0xFF & (argb >> 8));
 				byte blue = (byte) (0xFF & (argb >> 0));
 				
-				data[ci+0] = alpha;
-				data[ci+1] = red;
-				data[ci+2] = green;
-				data[ci+3] = blue;
+				data[ci+3] = alpha;
+				data[ci+0] = red;
+				data[ci+1] = green;
+				data[ci+2] = blue;
 				
 				ci += 4;
 			}
@@ -295,10 +295,11 @@ public class Converter {
 			
 			if (topng) {
 				Image png = convertToPNG(fis);
-				byte[] data = PNGHelper.write(png);
-				fos.write(data);
+				PNGEncoder encoder = new PNGEncoder(fos);
+				encoder.encode(png);
 			} else {
-				Image png = PNGHelper.read(fis);//TODO
+				PNGDecoder decoder = new PNGDecoder(fis);
+				Image png = decoder.decode();
 				byte[] data = convertFromPNG(png);
 				fos.write(data);
 			}
