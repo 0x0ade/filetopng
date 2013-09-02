@@ -1,6 +1,5 @@
 package com.angelde.filetopng;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -12,8 +11,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-
-import javax.imageio.ImageIO;
 
 /**
  * The converter class converts any binary input into an image output. <br> 
@@ -56,7 +53,7 @@ public class Converter {
 	 * @return BufferedImage being the resulting image
 	 * @throws IOException
 	 */
-	public static BufferedImage convertToPNG(InputStream is) throws IOException {
+	public static Image convertToPNG(InputStream is) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		byte[] buf = new byte[2048];
 		int n;
@@ -65,7 +62,7 @@ public class Converter {
 		}
 		baos.close();
 		byte[] data = baos.toByteArray();
-		BufferedImage png = convertToPNG(data);
+		Image png = convertToPNG(data);
 		return png;
 	}
 	
@@ -75,7 +72,7 @@ public class Converter {
 	 * @return BufferedImage being the resulting image
 	 * @throws IOException
 	 */
-	public static BufferedImage convertToPNG(byte[] data) throws IOException {
+	public static Image convertToPNG(byte[] data) throws IOException {
 		byte[] newdata = data;
 		boolean gzip = false;
 		if (useGZIP != Use.FALSE) {
@@ -92,11 +89,11 @@ public class Converter {
 				gzip = false;
 			}
 		}
-		BufferedImage png = convertToPNG0(newdata, gzip);
+		Image png = convertToPNG0(newdata, gzip);
 		return png;
 	}
 
-	private static BufferedImage convertToPNG0(byte[] argdata, boolean gzip) {
+	private static Image convertToPNG0(byte[] argdata, boolean gzip) {
 		System.out.println("Converting to PNG"+(gzip?" compressing data with GZIP ":"")+"...");
 		//Create the data array to convert. It contains the magic bytes and header.
 		float size = (float)(argdata.length+HEADERSIZE) / 4f;
@@ -148,7 +145,7 @@ public class Converter {
 		}
 		
 		//Convert.
-		BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		Image bi = new Image(width, height);
 		int x = 0;
 		int y = 0;
 		int rgba = 0;
@@ -157,7 +154,7 @@ public class Converter {
 					(((int)get(data, i+1) & 0xFF) << 16) | //red
 					(((int)get(data, i+2) & 0xFF) << 8)  | //green
 					(((int)get(data, i+3) & 0xFF) << 0); //blue
-			bi.setRGB(x, y, rgba);
+			bi.setPixel(x, y, rgba);
 			y++;
 			if (y >= height) {
 				x++;
@@ -175,18 +172,18 @@ public class Converter {
 	 * @return Data of the file converted into the image in form of an byte[].
 	 * @throws IOException
 	 */
-	public static byte[] convertFromPNG(BufferedImage bi) throws IOException {
+	public static byte[] convertFromPNG(Image bi) throws IOException {
 		System.out.println("Converting png back to file...");
 		//Create the byte array
-		int width = bi.getWidth();
-		int height = bi.getHeight();
+		int width = bi.width;
+		int height = bi.height;
 		byte[] data = new byte[width*height*4];
 		
 		//Convert pixels to data.
 		int ci = 0;
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
-				int argb = bi.getRGB(x, y);
+				int argb = bi.getPixel(x, y);
 				
 				byte alpha = (byte) (0xFF & (argb >> 24));
 				byte red = (byte) (0xFF & (argb >> 16));
@@ -297,11 +294,12 @@ public class Converter {
 			FileOutputStream fos = new FileOutputStream(output);
 			
 			if (topng) {
-				BufferedImage bi = convertToPNG(fis);
-				ImageIO.write(bi, "PNG", fos);
+				Image png = convertToPNG(fis);
+				byte[] data = PNGHelper.write(png);
+				fos.write(data);
 			} else {
-				BufferedImage bi = ImageIO.read(fis);
-				byte[] data = convertFromPNG(bi);
+				Image png = PNGHelper.read(fis);//TODO
+				byte[] data = convertFromPNG(png);
 				fos.write(data);
 			}
 			

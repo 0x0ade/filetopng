@@ -2,9 +2,17 @@ package com.angelde.filetopng;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
-/** Minimal PNG encoder to create PNG streams (and MIDP images) from RGBA arrays.<br>
+/** 
+ * Decoder license: <br>
+ * Decoder to come soon...
+ * 
+ * <br>
+ * Encoder license: <br>
+ * Minimal PNG encoder to create PNG streams (and MIDP images) from RGBA arrays.<br>
  * Copyright 2006-2009 Christian Fröschlin www.chrfr.de<br>
  * Terms of Use: You may use the PNG encoder free of charge for any purpose you desire, as long as you do not claim credit for
  * the original sources and agree not to hold me responsible for any damage arising out of its use.<br>
@@ -12,7 +20,7 @@ import java.io.IOException;
  * PNG encoder (C) 2006-2009 by Christian Fröschlin, www.chrfr.de 
  * 
  * <br>
- * Adapted from LibGDX' PixmapIO. Modified to fit File2PNG. Don't blame about missing documentation.*/
+ * Encoder adapted from LibGDX' PixmapIO. Modified to fit File2PNG. Don't blame about missing documentation.*/
 public class PNGHelper {
 	public static int[] crcTable;
 	public static final int ZLIB_BLOCK_SIZE = 32000;
@@ -164,4 +172,21 @@ public class PNGHelper {
 		}
 		return (s2 << 16) + s1;
 	}
+
+	public static Image read(InputStream is) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		byte[] buf = new byte[2048];
+		int n;
+		while ((n = is.read(buf)) >= 0) {
+			baos.write(buf, 0, n);
+		}
+		baos.close();
+		byte[] data = baos.toByteArray();
+		return read(data);
+	}
+
+	public static Image read(byte[] data) throws IOException {
+		return null;
+	}
+
 }
