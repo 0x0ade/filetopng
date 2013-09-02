@@ -1,6 +1,5 @@
-*.class
+# Eclipse output folder #
+bin/
 
-# Package Files #
-*.jar
-*.war
-*.ear
+# Mac OSX files #
+.DS_Store
