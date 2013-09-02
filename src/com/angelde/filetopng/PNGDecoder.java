@@ -116,7 +116,7 @@ public class PNGDecoder extends Object {
 		Image result = new Image(width, height);
 		
 		byte[] head = read(5);
-		if(!compare(head, new byte[]{8, 2, 0, 0, 0})) {
+		if(!compare(head, new byte[]{8, 2, 0, 0, 0})) {//TODO Adapt to RGBA
 			throw(new RuntimeException("Format error"));
 		}
 		
@@ -136,15 +136,16 @@ public class PNGDecoder extends Object {
 		int color;
 		
 		try {
-			byte[] row = new byte[width * 3];
+			byte[] row = new byte[width * 4];
 			for (int y = 0; y < height; y++) {
 				inflater.inflate(new byte[1]);
 				inflater.inflate(row);
 				for (int x = 0; x < width; x++) {
 					result.setPixel(x, y, 
-							((row[x * 3 + 0]&0xff) << 16) +
-							((row[x * 3 + 1]&0xff) << 8) +
-							((row[x * 3 + 2]&0xff)));
+							((row[x * 3 + 0]&0xff) << 24) +
+							((row[x * 3 + 1]&0xff) << 16) +
+							((row[x * 3 + 2]&0xff) << 8) +
+							((row[x * 3 + 3]&0xff)));
 				}
 			}
 		} catch(DataFormatException e) {

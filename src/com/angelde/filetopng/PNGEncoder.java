@@ -87,7 +87,7 @@ public class PNGEncoder extends Object {
 		write("IHDR".getBytes());
 		write(width);
 		write(height);
-		byte head[]={8, 2, 0, 0, 0};
+		byte head[]={8, 2, 0, 0, 0};//TODO Adapt to RGBA
 		write(head);
 		write((int) crc.getValue());
 		ByteArrayOutputStream compressed = new ByteArrayOutputStream(65536);
@@ -99,6 +99,7 @@ public class PNGEncoder extends Object {
 			bos.write(0);
 			for (int x=0;x<width;x++) {
 				pixel=image.getPixel(x,y);
+				bos.write((byte)((pixel >> 24) & 0xff));
 				bos.write((byte)((pixel >> 16) & 0xff));
 				bos.write((byte)((pixel >> 8) & 0xff));
 				bos.write((byte)(pixel & 0xff));
