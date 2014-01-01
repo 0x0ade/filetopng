@@ -19,6 +19,11 @@ public class FileToPNG {
 	public static Use useGZIP = Use.AUTO;
 
 	/**
+	 * The default size of the buffer used when pulling data in {@link #convertStreamToPNG(InputStream)}.
+	 */
+	public static int defaultBufferSize = 65536;
+
+	/**
 	 * The version number of FileToPNG. <br>
 	 * It is increased as soon as a change appears that may
 	 * create cross-version incompatibilities. <br>
@@ -53,7 +58,7 @@ public class FileToPNG {
 	 */
 	public static Image convertStreamToPNG(InputStream is) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		byte[] buf = new byte[65536];
+		byte[] buf = new byte[defaultBufferSize];
 		int n;
 		while ((n = is.read(buf)) >= 0) {
 			baos.write(buf, 0, n);

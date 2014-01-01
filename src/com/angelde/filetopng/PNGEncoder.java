@@ -9,6 +9,15 @@ import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 
 public final class PNGEncoder extends Object {
+
+	/**
+	 * The default initial size of the backing buffer when deflating.
+	 */
+	public static int defaultInitDataSize = 1048576;
+	/**
+	 * The default size of the buffer used when sending data to the deflated backing byte buffer.
+	 */
+	public static int defaultBufferSize = 65536;
 	
 	protected final static void write(OutputStream os, CRC32 crc, int i) throws IOException {
 		write(os, crc, new byte[] {
@@ -52,9 +61,9 @@ public final class PNGEncoder extends Object {
 
 		writeCRC(os, crc);
 
-		ByteArrayOutputStream compressed = new ByteArrayOutputStream(16777215);
+		ByteArrayOutputStream compressed = new ByteArrayOutputStream(defaultInitDataSize);
 		BufferedOutputStream cbos = new BufferedOutputStream(
-				new DeflaterOutputStream(compressed, new Deflater(9)), 16777215);
+				new DeflaterOutputStream(compressed, new Deflater(9)), defaultBufferSize);
 		int pixel;
 		for (int y = 0; y < height; y++) {
 			cbos.write(0);

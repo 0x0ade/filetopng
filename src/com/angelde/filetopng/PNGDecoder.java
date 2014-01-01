@@ -8,12 +8,17 @@ import java.util.zip.Inflater;
 
 public final class PNGDecoder {
 
+	/**
+	 * The default size of the buffer used when reading from the input stream when converting.
+	 */
+	public static int defaultBufferSize = 65536;
+
 	private final static int readInt(InputStream is) throws IOException {
 		byte b[] = read(is, 4);
-		return ((int)(b[0] & 0xFF) << 24) +
-				((int)(b[1] & 0xFF) << 16) +
-				((int)(b[2] & 0xFF) << 8) +
-				((int)(b[3] & 0xFF));
+		return ((b[0] & 0xFF) << 24) +
+				((b[1] & 0xFF) << 16) +
+				((b[2] & 0xFF) << 8) +
+				((b[3] & 0xFF));
 	}
 
 	private final static byte[] tbytes = new byte[16];
@@ -47,7 +52,7 @@ public final class PNGDecoder {
 	}
 	
 	public final static Image decode(InputStream is) throws IOException {
-		BufferedInputStream bis = new BufferedInputStream(is, 65536);
+		BufferedInputStream bis = new BufferedInputStream(is, defaultBufferSize);
 
 		checkEquality(read(bis, 12), PNGHelper.ID);
 
